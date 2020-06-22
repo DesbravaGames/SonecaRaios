@@ -52,4 +52,7 @@ float vetor3d_produto(Vetor3D a, Vetor3D b) {
     return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 }
 
+
+
+
 #endif

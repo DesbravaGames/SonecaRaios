@@ -4,7 +4,20 @@
 #include "vetores.h"
 #include "sdl_drawer.h"
 #include "time.h"
+#include "graficos.h"
 
+
+typedef struct {
+    Vetor3D posicao;
+    Cor cor;
+    float intensidade;
+} Luz;
+
+typedef struct {
+    Cor cor_ambiente;
+    float cor_ambiente_intensidade;
+    Luz lampada;
+} Cena;
 
 typedef struct {
     Vetor3D posicao;
@@ -39,11 +52,13 @@ float raio_intersepta_esfera(Raio *raio,Esfera *esfera) {
     
     return (t=b-det)>eps ? t : ((t=b+det)>eps ? t : 0);
 }
+
+
 Raio camera_tracar_raio(Camera* camera,int x,int y,int w,int h) {
     float posicaox=(float)(x-(w/2))/(float)w;
     float posicaoy=(float)(y-(h/2))/(float)h;
-    if(0) {
-        posicaox*=-1.0;
+    if(1) {
+        //posicaox*=-1.0;
         posicaoy*=-1.0;
     }
    // printf(" %d x %d - %f %f\n",x,y,posicaox,posicaoy);
@@ -58,46 +73,9 @@ Raio camera_tracar_raio(Camera* camera,int x,int y,int w,int h) {
     return novo_raio;
 }
 
-///////////////////////////
-typedef struct {
-    float vermelho,verde,azul;
-} Cor;
-
-const Cor cor_branco={1,1,1};
-const Cor cor_preto={0,0,0};
-
-
-typedef struct {
-    Vetor3D posicao;
-    Cor cor;
-    float intensidade;
-} Luz;
-
-typedef struct {
-    Cor cor_ambiente;
-    float cor_ambiente_intensidade;
-    Luz lampada;
-} Cena;
-
-Cor cor_soma(Cor a,Cor b) {
-    Cor result;
-
-    result.vermelho = clamp(a.vermelho + b.vermelho);
-    result.verde = clamp(a.verde + b.verde);
-    result.azul = clamp(a.azul + b.azul);
-
-    return result;
-}
-Cor dimensionar_cor(Cor c,float itensidade) {
-    return (Cor){c.vermelho*itensidade,c.verde*itensidade,c.azul*itensidade};
-}
-
-Cor misturar_cores(Cor a,Cor b) {
-    return (Cor){ (a.vermelho+b.vermelho)/2,(a.verde+b.verde)/2,(a.azul+b.azul)/2};
-}
-
-
-
+Esfera bola1;
+Esfera bola2;
+Esfera bola3;
 int main() {
     Camera camera;
     camera.posicao=(Vetor3D){0,0,-1000};
@@ -111,14 +89,8 @@ int main() {
         }
     };
     Imagem img=imagem_alocar(400,400);
-    
-    Esfera bola1;
-    bola1.posicao=vetor3d(0,-100,300);
-    bola1.raio=200;
-    Esfera bola2;
-    bola2.posicao=vetor3d(0,200,200);
-    bola2.raio=200;
-    Esfera bola3;
+    bola1=esfera_criar(200,vetor3d(0,-100,300));
+    bola2=esfera_criar(200,vetor3d(0,200,200));
     bola3.posicao=vetor3d(-20,0,200);
     bola3.raio=20;
 
@@ -150,11 +122,12 @@ int main() {
             cena.lampada.posicao.y-=100*time_delta();
         }
         if(sdl_teclado(SDL_KEYDOWN,SDLK_LEFT)) {
-            cena.lampada.posicao.x+=100*time_delta();
-        }
-        if(sdl_teclado(SDL_KEYDOWN,SDLK_RIGHT)) {
             cena.lampada.posicao.x-=100*time_delta();
         }
+        if(sdl_teclado(SDL_KEYDOWN,SDLK_RIGHT)) {
+            cena.lampada.posicao.x+=100*time_delta();
+        }
+
         bola3.posicao=cena.lampada.posicao;
         int pixels_pintados=0;
         int pixels_colididos=0;
@@ -201,13 +174,9 @@ int main() {
 
                 if(pintou_pixel) {
                     pixels_pintados++;
-                    uint8_t cor_rgb[3];
-                    cor_rgb[0]=(u_int8_t)(px.vermelho*255);
-                    cor_rgb[1]=(u_int8_t)(px.verde*255);
-                    cor_rgb[2]=(u_int8_t)(px.azul*255);
-                    imagem_pintar_pixel(&img,x,y,cor_rgb[0],cor_rgb[1],cor_rgb[2]);
+                    imagem_pintar_pixelf(&img,x,y,px.vermelho,px.verde,px.azul);
                 } else {
-                      imagem_pintar_pixel(&img,x,y,0,0,0);
+                    imagem_pintar_pixel(&img,x,y,0,0,0);
                 }
             
             }

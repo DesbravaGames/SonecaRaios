@@ -26,6 +26,14 @@ void imagem_pintar_pixel(Imagem* img,int x, int y,u_int8_t vermelho,u_int8_t ver
     pixel[1]=verde;
     pixel[2]=azul;
 }
+void imagem_pintar_pixelf(Imagem* img,int x,int y,float vermelho,float verde,float azul) {
+     u_int8_t cor_rgb[3];
+                    cor_rgb[0]=(u_int8_t)(vermelho*255);
+                    cor_rgb[1]=(u_int8_t)(verde*255);
+                    cor_rgb[2]=(u_int8_t)(azul*255);
+        imagem_pintar_pixel(img,x, y,cor_rgb[0],cor_rgb[1],cor_rgb[2]);
+
+}
 
 void imagem_salvar_ppm(Imagem* img,FILE* f) {
     fprintf(f, "P6\n%d %d\n255\n", img->altura, img->largura); 
