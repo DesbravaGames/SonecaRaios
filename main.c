@@ -134,13 +134,13 @@ int main() {
         for(int x=0;x<img.largura;x++) {
             for(int y=0;y<img.altura;y++) {
                 // PARA CADA PIXEL
-               
                 Raio r=camera_tracar_raio(&camera,x,y,img.largura,img.altura);
                 float z_anterior=9999999999.0;
                 int pintou_pixel=0;
                 Cor px;
                 //printf("RAIO %d x %d - %f %f %f\n",x,y,r.direcao.x,r.direcao.y,r.direcao.z);
                 //if(0)
+                int bolas_colididas=0;
                 for(int c=0;c<3;c++) {
                     Esfera bola;
                     if(c==0) bola=bola1;
@@ -151,6 +151,7 @@ int main() {
                     
                     if(t) {
                         pixels_colididos++;
+                        bolas_colididas++;
                         if(z_anterior>t) {
                            // printf("%f \n",t);
                             pintou_pixel=1;
@@ -174,7 +175,10 @@ int main() {
 
                 if(pintou_pixel) {
                     pixels_pintados++;
-                    imagem_pintar_pixelf(&img,x,y,px.vermelho,px.verde,px.azul);
+                   // if(bolas_colididas>1)
+                        imagem_pintar_pixelf(&img,x,y,px.vermelho,px.verde,px.azul);
+                  //  else 
+                 //       imagem_pintar_pixelf(&img,x,y,0,px.verde,px.azul);
                 } else {
                     imagem_pintar_pixel(&img,x,y,0,0,0);
                 }
